@@ -8,9 +8,7 @@ class UploadForm(forms.Form):
     # requires some queryset
     servers = forms.ModelMultipleChoiceField(queryset=Server.objects.none(), widget=forms.CheckboxSelectMultiple)
 
-
-
-    def __init__(self):
-        super(UploadForm, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(UploadForm, self).__init__(*args, **kwargs)
 
         self.fields['servers'].queryset = Server.objects.all()

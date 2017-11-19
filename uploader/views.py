@@ -10,5 +10,17 @@ from .forms import UploadForm
 @custom_login_required
 @custom_permission_required('user.access_uploader', messages.WARNING, strings.NO_UPLOADER_ACCESS)
 def uploader(request):
+
+    if request.method == 'POST':
+        form = UploadForm(request.POST)
+        if form.is_valid():
+            selected = form.cleaned_data.get('servers')
+            print(selected)
+            pass
+        else:
+            print(form.errors)
+
+
+
     form = UploadForm()
     return render(request, 'uploader.html', {'form': form})
