@@ -12,3 +12,8 @@ class ServerType(DjangoChoices):
     FAST_DL_PUBLIC = ChoiceItem()
     SERVER = ChoiceItem()
     SERVER_PUBLIC = ChoiceItem()
+
+
+class MapType(DjangoChoices):
+    LINEAR = ChoiceItem('Linear')
+    STAGED = ChoiceItem('Staged')
