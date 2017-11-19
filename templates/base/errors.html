@@ -1,15 +1,21 @@
+{% load to_newline %}
+
 {% if messages %}
     <script type="text/javascript">
-        var errors = '';
+
+        var $errors = $('<div></div>');
 
         {% for message in messages %}
-            errors += '{{ message }}\r\n';
+            var str = '{{ message | to_newline }} <br />';
+            str = str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+            $errors.append(str);
         {% endfor %}
 
+        console.log($errors);
 
         BootstrapDialog.show({
             title: 'Bad news',
-            message: errors
+            message: $errors
         });
 
     </script>

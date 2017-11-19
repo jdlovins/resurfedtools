@@ -1,5 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.shortcuts import redirect
+
+decorator_with_arguments = lambda decorator: lambda *args, **kwargs: lambda func: decorator(func, *args, **kwargs)
 
 
 def custom_login_required(function):
@@ -14,3 +17,16 @@ def custom_login_required(function):
     wrapper.__doc__ = function.__doc__
     wrapper.__name__ = function.__name__
     return wrapper
+
+
+@decorator_with_arguments
+def custom_permission_required(function, perm, message_type, message):
+    def _function(request, *args, **kwargs):
+        if request.user.has_perm(perm):
+            return function(request, *args, **kwargs)
+        else:
+            messages.add_message(request, message_type, message)
+            return redirect('index')
+            # Return a response or redirect to referrer or some page of your choice
+
+    return _function
