@@ -2,26 +2,26 @@
  * Created by Josh on 11/13/17.
  */
 $(document).ready(function () {
-    $("#input-id").fileinput({
-        uploadUrl: '/file-upload-batch/2',
-        maxFilePreviewSize: 10240,
-        showUpload: true,
-        //showPreview: false,
-        showUploadedThumbs: false,
-        mainClass: "input-group-lg",
-        fileActionSettings: {
-            showUpload: false
-        },
-        preferIconicPreview: true, // this will force thumbnails to display icons for following file extensions
-        previewFileIconSettings: { // configure your icon file extensions
-            'bsp': '<i class="fa fa-map text-primary"></i>',
-        },
-        previewFileExtSettings: { // configure the logic for determining icon file extensions
-            'bsp': function (ext) {
-                return ext.match(/(bsp)$/i);
-            }
+
+    // handles enabling or disabling all the Map Information stuff
+    $('#' + form_ids['map_information']).change(function () {
+        if ($(this).prop('checked')) {
+            $('#' + form_ids['map_author']).removeAttr("disabled");
+            $('#' + form_ids['map_type']).removeAttr("disabled");
+            $('#' + form_ids['map_zones']).removeAttr("disabled");
+            $('#' + form_ids['map_tier']).removeAttr("disabled");
+            $('#' + form_ids['map_bonuses']).removeAttr("disabled");
+            $('#' + form_ids['map_prehop']).removeAttr("disabled");
+            $('#' + form_ids['map_baked']).removeAttr("disabled");
+        } else {
+            $('#' + form_ids['map_author']).prop('disabled', true);
+            $('#' + form_ids['map_type']).prop('disabled', true);
+            $('#' + form_ids['map_zones']).prop('disabled', true);
+            $('#' + form_ids['map_tier']).prop('disabled', true);
+            $('#' + form_ids['map_bonuses']).prop('disabled', true);
+            $('#' + form_ids['map_prehop']).prop({'disabled': true, 'checked': false});
+            $('#' + form_ids['map_baked']).prop({'disabled': true, 'checked': false});
         }
     });
-
 
 });
