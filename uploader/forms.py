@@ -24,7 +24,7 @@ class UploadForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Big Blue',
+                'placeholder': '[pfN] big blue',
                 'class': 'form-control',
                 'tabindex': 2,
                 'disabled': True,

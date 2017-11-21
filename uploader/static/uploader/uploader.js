@@ -15,7 +15,7 @@ $(document).ready(function () {
     var $map_repalce = $('#id_replace_map');
     var $map_delete = $('#id_delete_map');
     var $map_list = $('#id_map_list');
-    var $filedrop = $('#drag-label');
+    var $file_drop = $('#drag-label');
 
     $uploader_form.formValidation({
         framework: 'bootstrap',
@@ -151,27 +151,27 @@ $(document).ready(function () {
 
 
 
-    $filedrop.on('dragenter', function (e) {
+    $file_drop.on('dragenter', function (e) {
         e.preventDefault();
         e.stopPropagation();
     });
 
-    $filedrop.on('dragover', function (e) {
+    $file_drop.on('dragover', function (e) {
         e.preventDefault();
         e.stopPropagation();
         $(this).addClass('hover');
     });
 
-    $filedrop.on('dragleave', function (e) {
+    $file_drop.on('dragleave', function (e) {
         e.preventDefault();
         e.stopPropagation();
         $(this).removeClass('hover');
     });
 
-    $filedrop.on('drop', function (e) {
+    $file_drop.on('drop', function (e) {
         e.preventDefault();
         var file = e.originalEvent.dataTransfer.files[0];
-        $filedrag.val(file.name);
+        $file_drop.val(file.name);
         $(this).removeClass('hover');
     });
 
