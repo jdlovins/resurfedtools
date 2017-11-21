@@ -1,6 +1,7 @@
 from django import forms
 from .models import Server
-from .choices import MapType
+from .choices import MapTypeChoices
+from .helpers import get_live_maps
 from django.utils.safestring import mark_safe
 
 
@@ -47,8 +48,7 @@ class UploadForm(forms.Form):
     )
 
     map_type = forms.ChoiceField(
-        choices=((0, "Staged"),
-                 (1, "Linear")),
+        choices=MapTypeChoices,
         required=False,
         widget=forms.Select(
             attrs={
@@ -91,16 +91,63 @@ class UploadForm(forms.Form):
         )
     )
 
-    disable_pre_hop = forms.BooleanField(
+    map_disable_pre_hop = forms.BooleanField(
         initial=False,
         required=False,
         help_text="Disable prehopping"
     )
 
-    enable_baked_triggers = forms.BooleanField(
+    map_enable_baked_triggers = forms.BooleanField(
         initial=False,
         required=False,
         help_text="Enabled baked in triggers"
+    )
+
+    map_spawns = forms.CharField(
+        required=False,
+        help_text=mark_safe("Format: type:zone:pos:ang <br/>"
+                            "types - map, stage, bonus <br/>"
+                            "zone - use the matching stage or bonus number <br/>"
+                            "pos - the pos coordinates from getpos (No decimals)<br/>"
+                            "ang - the ang coordinates from getang (No decimals)<br/>"
+                            "Note: For the map spawn leave the zone parameter empty! <br/>"),
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': mark_safe('stage:1:100,200,300:0,90,0\n'
+                                         'bonus:5:100,200,300:0,90,0\n'
+                                         'map::100,200,300:0,90,0'),
+                'class': 'form-control',
+                'tabindex': 6,
+                'disabled': True
+            }
+        )
+    )
+
+    # advanced options
+
+    replace_map = forms.BooleanField(
+        initial=False,
+        required=False,
+        help_text="Replaces map"
+    )
+
+    delete_map = forms.BooleanField(
+        initial=False,
+        required=False,
+        help_text="Deletes map"
+    )
+
+    map_list = forms.ChoiceField(
+        choices=get_live_maps(),
+        required=False,
+        widget=forms.Select(
+            attrs={
+                'placeholder': 1,
+                'class': 'form-control',
+                'tabindex': 4,
+                'disabled': True
+            }
+        )
     )
 
     def __init__(self, *args, **kwargs):

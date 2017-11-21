@@ -17,3 +17,9 @@ class ServerType(DjangoChoices):
 class MapType(DjangoChoices):
     LINEAR = ChoiceItem('Linear')
     STAGED = ChoiceItem('Staged')
+
+
+MapTypeChoices = (
+    (0, MapType.STAGED),
+    (1, MapType.LINEAR)
+)

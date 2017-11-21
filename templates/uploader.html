@@ -17,6 +17,7 @@
 {% endblock %}
 
 {% block content %}
+
     <div class="container">
         <div class="jumbotron">
 
@@ -27,7 +28,8 @@
             -->
 
 
-            <form class="form-horizontal" action="{% url 'uploader:uploader' %}" method="post" novalidate>
+            <form class="form-horizontal" id="uploader-form" action="{% url 'uploader:uploader' %}" method="post"
+                  novalidate>
 
                 <!-- https://formden.com/bootstrap-form-guide/ -->
                 <!-- https://getbootstrap.com/docs/3.3/components/#panels -->
@@ -39,8 +41,8 @@
                         <h3 class="panel-title">Map Information</h3>
                     </div>
                     <div class="panel-body">
-                        <div class="form-group"> <!-- Frequency Field -->
-                            <label class="control-label col-sm-2">Insert map Info?</label>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2">Add Map Info</label>
                             <div class="col-sm-5 row-m-t">
 
                                 <div class="pretty p-default p-smooth">
@@ -111,9 +113,9 @@
 
                                 <div class="pretty p-default p-smooth row-m-t">
                                     <input class="form-control" type="checkbox"
-                                           value="{{ form.disable_pre_hop.value }}"
-                                           name="{{ form.disable_pre_hop.name }}"
-                                           id="{{ form.disable_pre_hop.id_for_label }}" disabled/>
+                                           value="{{ form.map_disable_pre_hop.value }}"
+                                           name="{{ form.map_disable_pre_hop.name }}"
+                                           id="{{ form.map_disable_pre_hop.id_for_label }}" disabled/>
                                     <div class="state p-primary">
                                         <label class="hide-text">&nbsp;</label>
                                     </div>
@@ -129,9 +131,9 @@
 
                                 <div class="pretty p-default p-smooth row-m-t">
                                     <input class="form-control" type="checkbox"
-                                           value="{{ form.enable_baked_triggers.value }}"
-                                           name="{{ form.enable_baked_triggers.name }}"
-                                           id="{{ form.enable_baked_triggers.id_for_label }}" disabled/>
+                                           value="{{ form.map_enable_baked_triggers.value }}"
+                                           name="{{ form.map_enable_baked_triggers.name }}"
+                                           id="{{ form.map_enable_baked_triggers.id_for_label }}" disabled/>
                                     <div class="state p-primary">
                                         <label class="hide-text">&nbsp;</label>
                                     </div>
@@ -140,81 +142,135 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="control-label col-sm-2">Spawn Info</label>
+                            <div class="col-sm-6 row-m-t">
+                                {{ form.map_spawns }}
+                                <div class="help-block text-muted">
+                                    {{ form.map_spawns.help_text }}
+                                </div>
+                            </div>
+                        </div>
+
 
                     </div>
                 </div>
 
 
-                <!-- https://stackoverflow.com/questions/38373842/bootstrap-buttons-inside-list-group-item -->
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Spawn Locations</h3>
+                        <h3 class="panel-title">Upload Settings</h3>
                     </div>
                     <div class="panel-body">
 
 
                         <div class="form-group">
-                            <label class="control-label col-sm-2">List of Spawns</label>
-                            <div class="col-sm-6">
-                                <div class="list-group">
-                                    <a class="list-group-item clearfix" data-test="a">
-                                        Stage 1
-                                        <span class="pull-right">
-                                            <span class="btn btn-xs btn-default"
-                                                  onclick="alert($(this).parent().parent().attr('data-test')); event.stopPropagation();">
-                                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                                            </span>
+                            <label class="control-label col-sm-2">Upload To</label>
+                            <div class="col-sm-10">
+                                {% for field in form.servers %}
+                                    <div class="row row-m-t">
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                            <div class="pretty p-default p-smooth">
+                                                <input class="form-control" type="checkbox"
+                                                       value="{{ field.data.value }}"
+                                                       name="{{ field.data.name }}" id="{{ field.id_for_label }}"/>
+                                                <div class="state p-primary">
+                                                    <label>{{ field.data.label }}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+
+                        {% if perms.home.uploader_advanced %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Advanced Settings</h3>
+                                </div>
+                                <div class="panel-body">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Replace Map</label>
+                                        <div class="col-sm-5 row-m-t">
+
+                                            <div class="pretty p-default p-smooth">
+                                                <input class="form-control" type="checkbox"
+                                                       value="{{ form.replace_map.value }}"
+                                                       name="{{ form.replace_map.name }}"
+                                                       id="{{ form.replace_map.id_for_label }}"/>
+                                                <div class="state p-primary">
+                                                    <label class="hide-text">&nbsp;</label>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Delete Map</label>
+                                        <div class="col-sm-5 row-m-t">
+
+                                            <div class="pretty p-default p-smooth">
+                                                <input class="form-control" type="checkbox"
+                                                       value="{{ form.delete_map.value }}"
+                                                       name="{{ form.delete_map.name }}"
+                                                       id="{{ form.delete_map.id_for_label }}"/>
+                                                <div class="state p-danger">
+                                                    <label class="hide-text">&nbsp;</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Select Map</label>
+                                        <div class="col-sm-6">
+
+                                            {{ form.map_list }}
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    <label class="input-group-btn">
+                                        <span class="btn btn-primary">
+                                            Browse&hellip;
+                                            <input type="file" style="display: none;">
                                         </span>
-                                    </a>
+                                    </label>
+                                    <input type="text" id="drag-label" class="form-control"
+                                           value="Select a file or drag it onto here..." readonly>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Position Coords</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="spawn_coordinates" class="form-control" id="spawn_coordinates"
-                                       placeholder="x,y,z"/>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Angle Coords</label>
-                            <div class="col-sm-6">
-                                <input type="text" name="angle_coordinates" class="form-control" id="angle_coordinates"
-                                       placeholder="x,y,z"/>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
 
-                <div class="form-group"> <!-- Frequency Field -->
-                    <label class="control-label col-sm-2">Servers to upload to:</label>
-                    <div class="col-sm-10">
-
-                        {% for field in form.servers %}
-                            <div class="row row-m-t">
-                                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                                    <div class="pretty p-default p-smooth">
-                                        <input class="form-control" type="checkbox" value="{{ field.data.value }}"
-                                               name="{{ field.data.name }}" id="{{ field.id_for_label }}"/>
-                                        <div class="state p-primary">
-                                            <label>{{ field.data.label }}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-
-
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0"
+                         aria-valuemin="0" aria-valuemax="100"
+                         style="min-width: 2em;">
+                        0%
                     </div>
                 </div>
 
                 <div class="form-group"> <!-- Submit Button -->
-                    <div class="col-sm-10 col-sm-offset-2">
-                        <button type="submit" class="btn btn-primary">Upload</button>
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary btn-l btn-block">Upload</button>
                     </div>
                 </div>
 
@@ -228,17 +284,5 @@
 
 
 {% block footer %}
-    <script>
-        var form_ids = {
-            'map_information': '{{ form.insert_map_info.id_for_label }}',
-            'map_author': '{{ form.map_author.id_for_label }}',
-            'map_type': '{{ form.map_type.id_for_label }}',
-            'map_tier': '{{ form.map_tier.id_for_label }}',
-            'map_zones': '{{ form.map_zones.id_for_label }}',
-            'map_bonuses': '{{ form.map_bonuses.id_for_label }}',
-            'map_prehop': '{{ form.disable_pre_hop.id_for_label }}',
-            'map_baked': '{{ form.enable_baked_triggers.id_for_label }}'
-        }
-    </script>
 
 {% endblock %}

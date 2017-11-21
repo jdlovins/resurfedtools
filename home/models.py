@@ -8,4 +8,5 @@ class User(AbstractUser):
     class Meta:
         permissions = (
             ("access_uploader", "Can access the uploader"),
+            ("uploader_advanced", "Has access to the advanced uploader options")
         )

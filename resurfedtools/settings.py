@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
             ],
         },
     },
@@ -196,3 +197,9 @@ BOOTSTRAP3 = {
 LOGIN_URL = '/'
 
 AUTH_USER_MODEL = 'home.User'
+
+
+LIVE_MAP_URLS = {
+    'https://files.resurfed.com/maplists/elite.txt',
+    'https://files.resurfed.com/maplists/bhop.txt'
+}
