@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'uploader.apps.UploaderConfig',
     'bootstrap3',
     'widget_tweaks',
-    'home'
+    'channels',
+    'home',
+    'jobs'
 ]
 
 MIDDLEWARE = [
@@ -130,9 +132,13 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'static/'
 
 
-# bootstrap settings
+LOGIN_URL = '/'
 
-# Default settings
+AUTH_USER_MODEL = 'home.User'
+
+
+
+# bootstrap settings
 BOOTSTRAP3 = {
 
     # The URL to the jQuery JavaScript file
@@ -194,10 +200,16 @@ BOOTSTRAP3 = {
     },
 }
 
-LOGIN_URL = '/'
-
-AUTH_USER_MODEL = 'home.User'
-
+# Channels settings
+CHANNEL_LAYERS = {
+   "default": {
+       "BACKEND": "asgi_redis.RedisChannelLayer",  # use redis backend
+       "CONFIG": {
+           "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],  # set redis address
+       },
+       "ROUTING": "resurfedtools.routing.channel_routing",  # load routing from our routing.py file
+   },
+}
 
 LIVE_MAP_URLS = {
     'https://files.resurfed.com/maplists/elite.txt',

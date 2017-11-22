@@ -2,14 +2,26 @@
 <form id="ajax-login-form" action="{% url 'account-login' %}" method="post"
       role="form" autocomplete="off" novalidate>
 
-    {% for field in login_form %}
-        <div class="form-group">
-            {{ field }}
-            {% if field.help_text %}
-                {{ field.help_text }}
-            {% endif %}
+    <div class="form-group">
+        {{ login_form.user_name }}
+    </div>
+    <div class="form-group">
+        {{ login_form.password }}
+    </div>
+    <div class="form-group">
+        <div class="pretty p-default p-smooth">
+            <input class="form-control" type="checkbox"
+                   value="{{ login_form.remember_me.value }}"
+                   name="{{ login_form.remember_me.name }}"
+                   id="{{ login_form.remember_me.id_for_label }}"
+                   tabindex="3"/>
+            <div class="state p-primary">
+                <label class="hide-text">{{ login_form.remember_me.help_text }}</label>
+            </div>
         </div>
-    {% endfor %}
+    </div>
+
+    {{ login_form.remember_me.attrs }}
 
     <div class="form-group">
         <div class="row">

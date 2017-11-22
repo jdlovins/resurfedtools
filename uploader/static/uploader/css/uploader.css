@@ -1,0 +1,53 @@
+
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin');
+html,
+body {
+  height: 100%;
+}
+html {
+  font-size: 14px;
+}
+body {
+  overflow-x: hidden;
+  min-width: 320px;
+  background: #FFFFFF;
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.4285em;
+  color: rgba(0, 0, 0, 0.87);
+  font-smoothing: antialiased;
+}
+
+
+
+#uploader-div {
+    height: 400px;
+    padding-bottom: 3cm;
+}
+
+.pretty {
+    font-size: 17px;
+}
+
+.row-m-t {
+    margin-top: 10px;
+}
+
+.push-down {
+    position: relative;
+    top: 7px;
+}
+
+#drag-label.hover {
+    border-color: #0af017;
+    border-style: solid;
+    box-shadow: inset 0 3px 4px #888;
+}
+
+.drag-over {
+    border: 2px solid #00aef0;
+}
+
+.center-text {
+    text-align: center;
+}

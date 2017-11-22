@@ -95,7 +95,7 @@ class LoginForm(forms.Form):
     )
 
     remember_me = forms.BooleanField(
-        help_text="Remember me?",
+        help_text="Remember me",
         required=False,
         widget=forms.CheckboxInput(
             attrs={

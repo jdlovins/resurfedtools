@@ -16,6 +16,7 @@ def uploader(request):
         form = UploadForm(request.POST)
         if form.is_valid():
             selected = form.cleaned_data.get('servers')
+            print(request.FILES)
             #map_type = form.fields['map_type'].choices[int(form.cleaned_data.get('map_type'))][1]
             print(selected)
         else:

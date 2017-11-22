@@ -16,6 +16,7 @@ $(document).ready(function () {
     var $map_delete = $('#id_delete_map');
     var $map_list = $('#id_map_list');
     var $file_drop = $('#drag-label');
+    var fv = $uploader_form.data('formValidation');
 
     $uploader_form.formValidation({
         framework: 'bootstrap',
@@ -63,7 +64,6 @@ $(document).ready(function () {
         }
     });
 
-    var fv = $uploader_form.data('formValidation');
 
     // handles enabling or disabling all the Map Information stuff
     $('#id_insert_map_info').change(function () {
@@ -125,7 +125,7 @@ $(document).ready(function () {
     });
 
 
-    $(document).on('change', ':file', function () {
+    $(document).on('change', ':file', function (e) {
         var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
@@ -146,9 +146,6 @@ $(document).ready(function () {
         }
 
     });
-
-
-
 
 
     $file_drop.on('dragenter', function (e) {
@@ -175,6 +172,19 @@ $(document).ready(function () {
         $(this).removeClass('hover');
     });
 
-    //$filedrag.css('display', 'block');
+
+    $('#submit-form').click(function (e) {
+
+        e.preventDefault(); // prevents default
+    });
+
+
+    var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    var ws_path = ws_scheme + '://' + window.location.host + "/uploader";
+    console.log("Connecting to " + ws_path);
+    var socket = new ReconnectingWebSocket(ws_path);
+
+
+    $('.ui.fluid').dropdown();
 
 });

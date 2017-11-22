@@ -8,7 +8,17 @@ from django.utils.safestring import mark_safe
 class UploadForm(forms.Form):
     # here we use a dummy `queryset`, because ModelChoiceField
     # requires some queryset
-    servers = forms.ModelMultipleChoiceField(queryset=Server.objects.none(), widget=forms.CheckboxSelectMultiple)
+
+    servers = forms.ModelMultipleChoiceField(
+        queryset=Server.objects.none(),
+        required=False,
+        widget=forms.SelectMultiple(
+            attrs={
+                'class': 'ui fluid search dropdown',
+                'tabindex': 10
+            }
+        )
+    )
 
     # replace_map = forms.BooleanField()
 
@@ -32,12 +42,10 @@ class UploadForm(forms.Form):
         )
     )
 
-    map_tier = forms.IntegerField(
-        min_value=1,
-        max_value=6,
-        help_text="Tier of the map, choose carefully!",
+    map_type = forms.ChoiceField(
+        choices=MapTypeChoices,
         required=False,
-        widget=forms.NumberInput(
+        widget=forms.Select(
             attrs={
                 'placeholder': 1,
                 'class': 'form-control',
@@ -47,10 +55,12 @@ class UploadForm(forms.Form):
         )
     )
 
-    map_type = forms.ChoiceField(
-        choices=MapTypeChoices,
+    map_tier = forms.IntegerField(
+        min_value=1,
+        max_value=6,
+        help_text="Tier of the map, choose carefully!",
         required=False,
-        widget=forms.Select(
+        widget=forms.NumberInput(
             attrs={
                 'placeholder': 1,
                 'class': 'form-control',
@@ -117,7 +127,7 @@ class UploadForm(forms.Form):
                                          'bonus:5:100,200,300:0,90,0\n'
                                          'map::100,200,300:0,90,0'),
                 'class': 'form-control',
-                'tabindex': 6,
+                'tabindex': 9,
                 'disabled': True
             }
         )
@@ -144,7 +154,7 @@ class UploadForm(forms.Form):
             attrs={
                 'placeholder': 1,
                 'class': 'form-control',
-                'tabindex': 4,
+                'tabindex': 13,
                 'disabled': True
             }
         )
