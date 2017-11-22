@@ -16,7 +16,16 @@ $(document).ready(function () {
     var $map_delete = $('#id_delete_map');
     var $map_list = $('#id_map_list');
     var $file_drop = $('#drag-label');
+    var $submit_button = $('#submit-form-btn');
+    var $progress = $('#progress-bar');
     var fv = $uploader_form.data('formValidation');
+
+    var file;
+
+    var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    var ws_path = ws_scheme + '://' + window.location.host + "/uploader";
+    var socket = new ReconnectingWebSocket(ws_path);
+
 
     $uploader_form.formValidation({
         framework: 'bootstrap',
@@ -129,7 +138,8 @@ $(document).ready(function () {
         var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-        console.log(input.get(0).files);
+        file = input.get(0).files[0];
+        $submit_button.prop('disabled', false);
         input.trigger('fileselect', [numFiles, label]);
     });
 
@@ -141,8 +151,6 @@ $(document).ready(function () {
 
         if (input.length) {
             input.val(log);
-        } else {
-            if (log) alert(log);
         }
 
     });
@@ -166,23 +174,116 @@ $(document).ready(function () {
     });
 
     $file_drop.on('drop', function (e) {
+
         e.preventDefault();
-        var file = e.originalEvent.dataTransfer.files[0];
-        $file_drop.val(file.name);
         $(this).removeClass('hover');
+
+        var t_file = e.originalEvent.dataTransfer.files[0];
+
+        if (!t_file.name.match(/.bsp$/)) {
+
+            BootstrapDialog.show({
+                title: "What are you doing?",
+                message: '<h1>You can only upload .bsp files!</h1> <br/><br/>' +
+                '<img src="https://i.imgur.com/MWUKggh.gif" />',
+                type: BootstrapDialog.TYPE_DANGER,
+                buttons: [{
+                    hotkey: 13,
+                    label: 'Ok, Sorry :(',
+                    cssClass: 'btn-primary',
+                    action: function (dialogItself) {
+                        dialogItself.close();
+                    }
+                }]
+            });
+            return;
+        }
+
+        file = t_file;
+        $file_drop.val(file.name);
+
+        $submit_button.prop('disabled', false);
+
     });
 
+    function collectFormData() {
+        // Go through all the form fields and collect their names/values.
+        var fd = new FormData(this);
 
-    $('#submit-form').click(function (e) {
 
-        e.preventDefault(); // prevents default
+        $("form#uploader-form :input").each(function () {
+            var $this = $(this);
+            var name = $this.attr("name");
+            var type = $this.attr("type") || "";
+            var value = $this.val();
+
+            if (name === undefined) {
+                return;
+            }
+
+            if (type === "file") {
+                return;
+            }
+
+            if (type === "checkbox" || type === "radio") {
+                if (!$this.prop("checked")) {
+                    return;
+                }
+                value = true;
+            }
+
+            fd.append(name, value);
+        });
+
+        console.log(file);
+        fd.append("file", file);
+
+        return fd;
+    }
+
+    $submit_button.click(function (e) {
+
+        e.preventDefault();
+        $submit_button.prop('disabled', true);
+
+        var fd = collectFormData();
+
+        $.ajax({
+            xhr: function () {
+                var xhrobj = $.ajaxSettings.xhr();
+                if (xhrobj.upload) {
+                    xhrobj.upload.addEventListener("progress", function (event) {
+                        var percent = 0;
+                        var position = event.loaded || event.position;
+                        var total = event.total;
+
+                        if (event.lengthComputable) {
+                            percent = Math.ceil(position / total * 100);
+                        }
+
+                        console.log(percent);
+                        $progress.css('width', percent + '%').attr('aria-valuenow', percent).text(percent + "%")
+                            .removeClass('progress-bar-info').addClass('progress-bar-success');
+
+                    }, false)
+                }
+                return xhrobj;
+            },
+            url: '/uploader',
+            method: "POST",
+            contentType: false,
+            processData: false,
+            cache: false,
+            data: fd,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                $submit_button.prop("disabled", false);
+            }
+        });
+
+
     });
-
-
-    var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-    var ws_path = ws_scheme + '://' + window.location.host + "/uploader";
-    console.log("Connecting to " + ws_path);
-    var socket = new ReconnectingWebSocket(ws_path);
 
 
     $('.ui.fluid').dropdown();
