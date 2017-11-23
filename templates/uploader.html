@@ -22,12 +22,14 @@
     <link href="{% static 'uploader/css/image.min.css' %}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{% static 'uploader/css/transition.min.css' %}" media="all" rel="stylesheet" type="text/css"/>
     <script src="{% static "uploader/js/transition.min.js" %}" type="text/javascript"></script>
+    <script src="{% static "uploader/js/form.min.js" %}" type="text/javascript"></script>
 
     <link href="{% static 'uploader/css/label.min.css' %}" media="all" rel="stylesheet" type="text/css"/>
 
 {% endblock %}
 
 {% block content %}
+
 
     <div class="container">
         <div class="jumbotron">
@@ -39,8 +41,7 @@
             -->
 
 
-            <form class="form-horizontal" id="uploader-form" action="{% url 'uploader:uploader' %}" method="post"
-                  enctype="multipart/form-data" novalidate>
+            <form class="form form-horizontal" id="uploader-form" novalidate>
 
                 <!-- https://formden.com/bootstrap-form-guide/ -->
                 <!-- https://getbootstrap.com/docs/3.3/components/#panels -->
@@ -251,11 +252,11 @@
                                     <label class="input-group-btn">
                                         <span class="btn btn-primary">
                                             Browse&hellip;
-                                            <input type="file" id="file-input" style="display: none;" size="999"
+                                            <input type="file" name="file_input" id="id_file_input" style="display: none;" size="999"
                                                    accept=".bsp" tabindex="14">
                                         </span>
                                     </label>
-                                    <input type="text" id="drag-label" class="form-control"
+                                    <input type="text" id="file_label" class="form-control"
                                            value="Select a file or drag n' drop it onto here..." readonly>
                                 </div>
                             </div>
@@ -289,7 +290,9 @@
                     <h3 class="panel-title">Status Messages</h3>
                 </div>
                 <div class="panel-body">
-                    <p></p>
+                    <div id="logs">
+
+                    </div>
                 </div>
             </div>
 

@@ -1,7 +1,10 @@
 /**
  * Created by Josh on 11/13/17.
  */
-$(document).ready(function () {
+$(window).bind("load", function () {
+
+
+    $('.ui.fluid').dropdown();
 
     var $uploader_form = $('#uploader-form');
     var $map_author = $('#id_map_author');
@@ -12,29 +15,65 @@ $(document).ready(function () {
     var $map_pre_hop = $('#id_map_disable_pre_hop');
     var $map_baked_triggers = $('#id_map_enable_baked_triggers');
     var $map_spawns = $('#id_map_spawns');
-    var $map_repalce = $('#id_replace_map');
+    var $map_replace = $('#id_replace_map');
     var $map_delete = $('#id_delete_map');
     var $map_list = $('#id_map_list');
-    var $file_drop = $('#drag-label');
+    var $file_label = $('#file_label');
     var $submit_button = $('#submit-form-btn');
     var $progress = $('#progress-bar');
+    var $log = $('#logs');
     var fv = $uploader_form.data('formValidation');
 
-    var file;
+    var file = null;
+    var connected = false;
+    var reply_channel = null;
+
+    var actions = {
+        reply_channel: "reply_channel"
+    };
 
     var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
     var ws_path = ws_scheme + '://' + window.location.host + "/uploader";
     var socket = new ReconnectingWebSocket(ws_path);
 
 
+    $map_list.parent().addClass("disabled");
+
     $uploader_form.formValidation({
         framework: 'bootstrap',
+        excluded: ':disabled',
         icon: {
             valid: 'glyphicon glyphicon-ok',
             invalid: 'glyphicon glyphicon-remove',
             validating: 'glyphicon glyphicon-refresh'
         },
         fields: {
+            map_author: {
+                validators: {
+                    notEmpty: {
+                        message: 'The map author is required'
+                    },
+                    stringLength: {
+                        max: 32,
+                        min: 1,
+                        message: 'The map author needs to be at least 1 letter and less than 32.'
+                    }
+                }
+            },
+            map_type: {
+                validators: {
+                    notEmpty: {
+                        message: 'You should never see this!'
+                    }
+                }
+            },
+            servers: {
+                validators: {
+                    notEmpty: {
+                        message: "Please select at least one server."
+                    }
+                }
+            },
             map_spawns: {
                 validators: {
                     callback: {
@@ -63,15 +102,27 @@ $(document).ready(function () {
                     }
                 }
             },
-            map_author: {
+            map_list: {
                 validators: {
                     notEmpty: {
-                        message: 'The username is required'
+                        message: "You need to choose a map to replace / delete"
+                    }
+                }
+            },
+            file_input: {
+                validators: {
+                    notEmpty: {
+                        message: "You ned to upload a map."
                     }
                 }
             }
         }
     });
+
+
+    function log_message(message) {
+        $log.append('<p>' + message + '</p><br/>')
+    }
 
 
     // handles enabling or disabling all the Map Information stuff
@@ -111,24 +162,32 @@ $(document).ready(function () {
         }
     });
 
-    $map_delete.change(function () {
+    $map_replace.change(function () {
+        var l_fv = $uploader_form.data('formValidation');
         if ($(this).prop('checked')) {
-            $map_list.prop('disabled', false);
+            $map_list.parent().removeClass("disabled");
+            $map_list.prop("disabled", false);
         }
         else {
-            if (!$map_repalce.prop('checked')) {
-                $map_list.prop('disabled', true);
+            if (!$map_delete.prop('checked')) {
+                l_fv.resetField($map_list);
+                $map_list.parent().addClass("disabled");
+                $map_list.prop("disabled", true);
             }
         }
     });
 
-    $map_repalce.change(function () {
+    $map_delete.change(function () {
+        var l_fv = $uploader_form.data('formValidation');
         if ($(this).prop('checked')) {
-            $map_list.prop('disabled', false);
+            $map_list.parent().removeClass("disabled");
+            $map_list.prop("disabled", false);
         }
         else {
-            if (!$map_delete.prop('checked')) {
-                $map_list.prop('disabled', true);
+            if (!$map_repalce.prop('checked')) {
+                l_fv.resetField($map_list);
+                $map_list.parent().addClass("disabled");
+                $map_list.prop("disabled", true);
             }
         }
     });
@@ -156,24 +215,24 @@ $(document).ready(function () {
     });
 
 
-    $file_drop.on('dragenter', function (e) {
+    $file_label.on('dragenter', function (e) {
         e.preventDefault();
         e.stopPropagation();
     });
 
-    $file_drop.on('dragover', function (e) {
+    $file_label.on('dragover', function (e) {
         e.preventDefault();
         e.stopPropagation();
         $(this).addClass('hover');
     });
 
-    $file_drop.on('dragleave', function (e) {
+    $file_label.on('dragleave', function (e) {
         e.preventDefault();
         e.stopPropagation();
         $(this).removeClass('hover');
     });
 
-    $file_drop.on('drop', function (e) {
+    $file_label.on('drop', function (e) {
 
         e.preventDefault();
         $(this).removeClass('hover');
@@ -200,11 +259,36 @@ $(document).ready(function () {
         }
 
         file = t_file;
-        $file_drop.val(file.name);
+        $file_label.val(file.name);
 
-        $submit_button.prop('disabled', false);
+        var l_fv = $uploader_form.data('formValidation');
+        l_fv.updateStatus('file_input', "VALID");
 
     });
+
+    $('.servers').dropdown('setting', 'onChange',
+        function () {
+
+        });
+
+
+    socket.onopen = function () {
+        log_message('Connected to uploader backend...');
+        connected = true;
+    };
+
+    socket.onclose = function () {
+        connected = false;
+    };
+
+
+    socket.onmessage = function (message) {
+        console.log("Got message: " + message.data);
+        var data = JSON.parse(message.data);
+        if (data.action === actions.reply_channel) {
+            reply_channel = actions.reply_channel;
+        }
+    };
 
     function collectFormData() {
         // Go through all the form fields and collect their names/values.
@@ -232,6 +316,8 @@ $(document).ready(function () {
                 value = true;
             }
 
+            console.log(name + " - " + value);
+
             fd.append(name, value);
         });
 
@@ -244,6 +330,16 @@ $(document).ready(function () {
     $submit_button.click(function (e) {
 
         e.preventDefault();
+
+        var l_fv = $uploader_form.data('formValidation');
+
+        l_fv.validateField($("#id_servers"));
+        l_fv.validateField($("#id_map_list"));
+        l_fv.validateField($("#id_file_input"));
+        if (!l_fv.isValid()) {
+            return;
+        }
+
         $submit_button.prop('disabled', true);
 
         var fd = collectFormData();
@@ -285,7 +381,5 @@ $(document).ready(function () {
 
     });
 
-
-    $('.ui.fluid').dropdown();
 
 });

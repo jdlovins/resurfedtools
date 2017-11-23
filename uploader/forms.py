@@ -14,7 +14,7 @@ class UploadForm(forms.Form):
         required=False,
         widget=forms.SelectMultiple(
             attrs={
-                'class': 'ui fluid search dropdown',
+                'class': 'ui fluid search servers dropdown',
                 'tabindex': 10
             }
         )
@@ -148,12 +148,12 @@ class UploadForm(forms.Form):
     )
 
     map_list = forms.ChoiceField(
-        choices=get_live_maps(),
+        choices=[],
         required=False,
         widget=forms.Select(
             attrs={
                 'placeholder': 1,
-                'class': 'form-control',
+                'class': 'ui fluid map_list dropdown',
                 'tabindex': 13,
                 'disabled': True
             }
@@ -164,3 +164,4 @@ class UploadForm(forms.Form):
         super(UploadForm, self).__init__(*args, **kwargs)
 
         self.fields['servers'].queryset = Server.objects.all()
+        self.fields['map_list'].choices = get_live_maps()

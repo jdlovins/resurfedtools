@@ -8,7 +8,7 @@ def get_live_maps():
     maps = []
     count = 1
 
-    maps.append((0, "--- N/A ---"))
+    maps.append((None, "Map"))
 
     for url in settings.LIVE_MAP_URLS:
         try:
@@ -20,4 +20,5 @@ def get_live_maps():
         except HTTPError as e:
             pass
 
+    print("We are collecting maps")
     return maps
