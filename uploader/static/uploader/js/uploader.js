@@ -447,7 +447,6 @@ $(window).bind("load", function () {
                         break;
 
                     case actions.started_task:
-                        log_message("Processing map");
                         $progress.removeClass('progress-bar-success').addClass('progress-bar-info');
                         break;
                 }

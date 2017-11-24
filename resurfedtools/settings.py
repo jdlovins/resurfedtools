@@ -26,7 +26,7 @@ SECRET_KEY = 'rx#@$%$!*%-nzsdbez3xie6(=w0s8ol^f2^0q^d=j0a4)t5!i-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition

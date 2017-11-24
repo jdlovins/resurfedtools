@@ -1,9 +1,8 @@
 from __future__ import absolute_import
 import os
 from resurfedtools.celery import app
-from channels import Channel
 from .models import Server
-from .choices import ActionType
+from .choices import ActionType, ServerType
 from resurfedtools.helpers import generate_json_response, send_channel_message
 import logging
 from .helpers import compress
@@ -12,15 +11,18 @@ log = logging.getLogger(__name__)
 
 
 @app.task(name="tasks.upload_file")
-def upload_file(reply_channel, file_path, servers, delete_map, replace_map, old_map):
-    print("we got called!" + reply_channel)
-    base_name = os.path.basename(file_path)
-    send_channel_message(reply_channel, generate_json_response(ActionType.MESSAGE, {
-        'message': f"Starting to compress {base_name}"
-    }))
-    compress(reply_channel, file_path)
+def upload_file(reply_channel, file_path, servers_ids, delete_map, replace_map, old_map):
 
-    pass
+    servers = [Server.objects.get(pk=server) for server in servers_ids]
+    base_name = os.path.basename(file_path)
+
+    for server in servers:
+        if server.server_type == ServerType.FAST_DL or server.server_type == ServerType.FAST_DL_PUBLIC:
+            send_channel_message(reply_channel, generate_json_response(ActionType.MESSAGE, {
+                'message': f"Starting to compress {base_name}"
+            }))
+            compress(reply_channel, file_path)
+            break
 
 
 @app.task(name="tasks.insert_map_information")

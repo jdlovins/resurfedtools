@@ -6,7 +6,6 @@ from .choices import ActionType
 from resurfedtools.helpers import send_channel_message, generate_json_response
 
 
-
 def handle_uploaded_file(f):
     path = f"{settings.UPLOAD_PATH}/{f}"
     with open(path, 'wb+') as destination:
