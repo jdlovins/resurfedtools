@@ -24,10 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rx#@$%$!*%-nzsdbez3xie6(=w0s8ol^f2^0q^d=j0a4)t5!i-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", True)
 
 ALLOWED_HOSTS = []
-
 
 
 # Application definition
@@ -136,6 +135,7 @@ LOGIN_URL = '/'
 
 AUTH_USER_MODEL = 'home.User'
 
+UPLOAD_PATH = os.getenv("UPLOAD_PATH", "/tmp")
 
 
 # bootstrap settings
@@ -210,6 +210,12 @@ CHANNEL_LAYERS = {
        "ROUTING": "resurfedtools.routing.channel_routing",  # load routing from our routing.py file
    },
 }
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # our redis address
+# use json format for everything
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 LIVE_MAP_URLS = {
     'https://files.resurfed.com/maplists/elite.txt',

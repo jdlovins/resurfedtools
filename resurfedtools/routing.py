@@ -1,6 +1,6 @@
 from channels import route
-from jobs import consumers
 
+from resurfedtools import consumers
 
 channel_routing = [
    # Wire up websocket channels to our consumers:

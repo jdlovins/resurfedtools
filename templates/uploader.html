@@ -22,7 +22,6 @@
     <link href="{% static 'uploader/css/image.min.css' %}" media="all" rel="stylesheet" type="text/css"/>
     <link href="{% static 'uploader/css/transition.min.css' %}" media="all" rel="stylesheet" type="text/css"/>
     <script src="{% static "uploader/js/transition.min.js" %}" type="text/javascript"></script>
-    <script src="{% static "uploader/js/form.min.js" %}" type="text/javascript"></script>
 
     <link href="{% static 'uploader/css/label.min.css' %}" media="all" rel="stylesheet" type="text/css"/>
 
@@ -187,7 +186,7 @@
                         </div>
 
 
-                        {% if perms.home.uploader_advanced %}
+                        {% if perms.home.uploader_admin %}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h3 class="panel-title">Advanced Settings</h3>

@@ -1,11 +1,11 @@
 from django.db import models
 from .choices import UploadType, ServerType
 
+
 # Create your models here.
 
 
 class Server(models.Model):
-
     order = models.IntegerField(unique=True, blank=False)
     name = models.CharField(max_length=64, blank=False)
     connection = models.CharField(max_length=10, choices=UploadType.choices, blank=False)
@@ -20,3 +20,13 @@ class Server(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+
+class UploaderPermissions(models.Model):
+    class Meta:
+        managed = False
+
+        permissions = (
+            ("uploader_access", "Has access to the uploader"),
+            ("uploader_admin", "Has uploader admin access")
+        )

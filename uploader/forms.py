@@ -1,7 +1,6 @@
 from django import forms
 from .models import Server
-from .choices import MapTypeChoices
-from .helpers import get_live_maps
+from .choices import MapTypeChoices, get_live_maps, ServerType
 from django.utils.safestring import mark_safe
 
 
@@ -160,8 +159,15 @@ class UploadForm(forms.Form):
         )
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(UploadForm, self).__init__(*args, **kwargs)
 
-        self.fields['servers'].queryset = Server.objects.all()
+        server_query = Server.objects
+
+        if user.has_perm('uploader.uploader_admin'):
+            server_query = server_query.all()
+        else:
+            server_query = server_query.filter(server_type__in=[ServerType.FAST_DL_PUBLIC, ServerType.SERVER_PUBLIC]).all()
+
+        self.fields['servers'].queryset = server_query
         self.fields['map_list'].choices = get_live_maps()

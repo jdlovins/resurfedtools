@@ -29,7 +29,12 @@ $(window).bind("load", function () {
     var reply_channel = null;
 
     var actions = {
-        reply_channel: "reply_channel"
+        reply_channel: "reply_channel",
+        form_error: "form_error",
+        general_error: "general_error",
+        started_task: "started_task",
+        progress_update: "progress_update",
+        message: "message"
     };
 
     var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
@@ -170,8 +175,8 @@ $(window).bind("load", function () {
         }
         else {
             if (!$map_delete.prop('checked')) {
+                $map_list.parent().addClass("disabled").dropdown('clear');
                 l_fv.resetField($map_list);
-                $map_list.parent().addClass("disabled");
                 $map_list.prop("disabled", true);
             }
         }
@@ -184,9 +189,9 @@ $(window).bind("load", function () {
             $map_list.prop("disabled", false);
         }
         else {
-            if (!$map_repalce.prop('checked')) {
+            if (!$map_replace.prop('checked')) {
+                $map_list.parent().addClass("disabled").dropdown('clear');
                 l_fv.resetField($map_list);
-                $map_list.parent().addClass("disabled");
                 $map_list.prop("disabled", true);
             }
         }
@@ -243,7 +248,7 @@ $(window).bind("load", function () {
 
             BootstrapDialog.show({
                 title: "What are you doing?",
-                message: '<h1>You can only upload .bsp files!</h1> <br/><br/>' +
+                message: '<h1>You can only upload .bsp files!</h1><br/><br/>' +
                 '<img src="https://i.imgur.com/MWUKggh.gif" />',
                 type: BootstrapDialog.TYPE_DANGER,
                 buttons: [{
@@ -266,12 +271,6 @@ $(window).bind("load", function () {
 
     });
 
-    $('.servers').dropdown('setting', 'onChange',
-        function () {
-
-        });
-
-
     socket.onopen = function () {
         log_message('Connected to uploader backend...');
         connected = true;
@@ -281,12 +280,26 @@ $(window).bind("load", function () {
         connected = false;
     };
 
-
     socket.onmessage = function (message) {
         console.log("Got message: " + message.data);
-        var data = JSON.parse(message.data);
-        if (data.action === actions.reply_channel) {
-            reply_channel = actions.reply_channel;
+        var packet = JSON.parse(message.data);
+
+        switch(packet.action) {
+            case actions.reply_channel:
+                reply_channel = packet.data.reply_channel;
+                break;
+
+            case actions.progress_update:
+                var percent = packet.data.progress;
+                $progress.css('width', percent + '%').attr('aria-valuenow', percent).text(percent + "%");
+                console.log(percent);
+                if (percent === 100)
+                    $progress.removeClass('progress-bar-info').addClass('progress-bar-success');
+                break;
+
+            case actions.message:
+                log_message(packet.data.message);
+                break;
         }
     };
 
@@ -321,8 +334,8 @@ $(window).bind("load", function () {
             fd.append(name, value);
         });
 
-        console.log(file);
         fd.append("file", file);
+        fd.append("reply_channel", reply_channel);
 
         return fd;
     }
@@ -358,8 +371,11 @@ $(window).bind("load", function () {
                         }
 
                         console.log(percent);
-                        $progress.css('width', percent + '%').attr('aria-valuenow', percent).text(percent + "%")
-                            .removeClass('progress-bar-info').addClass('progress-bar-success');
+                        $progress.css('width', percent + '%').attr('aria-valuenow', percent).text(percent + "%");
+
+                        if (percent === 100) {
+                            $progress.removeClass('progress-bar-info').addClass('progress-bar-success');
+                        }
 
                     }, false)
                 }
@@ -372,14 +388,71 @@ $(window).bind("load", function () {
             cache: false,
             data: fd,
             dataType: 'json',
-            success: function (data) {
-                console.log(data);
-                $submit_button.prop("disabled", false);
+            success: function (response) {
+                switch (response.action) {
+
+                    case actions.form_error:
+                        console.log(response.data['errors']);
+
+                        var error_list = response.data['errors'];
+
+                        var error_message = '';
+
+                        for (var key in error_list) {
+                            if (error_list.hasOwnProperty(key)) {
+                                for (var error in error_list[key]) {
+                                    if (error_list[key].hasOwnProperty(error)) {
+                                        error_message += "<p>" + key + '  -  ' + error_list[key][error] + "</p><br/>";
+                                    }
+                                }
+                            }
+                        }
+
+                        BootstrapDialog.show({
+                            title: "Something went wrong!",
+                            message: error_message,
+                            type: BootstrapDialog.TYPE_DANGER,
+                            buttons: [{
+                                hotkey: 13,
+                                label: 'Close',
+                                cssClass: 'btn-primary',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }]
+                        });
+
+                        $progress.removeClass('progress-bar-success').addClass('progress-bar-danger');
+
+                        break;
+
+
+                    case actions.general_error:
+
+                        BootstrapDialog.show({
+                            title: "Something went wrong!",
+                            message: response.data,
+                            type: BootstrapDialog.TYPE_DANGER,
+                            buttons: [{
+                                hotkey: 13,
+                                label: 'Close',
+                                cssClass: 'btn-primary',
+                                action: function (dialogItself) {
+                                    dialogItself.close();
+                                }
+                            }]
+                        });
+
+                        $progress.removeClass('progress-bar-success').addClass('progress-bar-danger');
+                        break;
+
+                    case actions.started_task:
+                        log_message("Processing map");
+                        $progress.removeClass('progress-bar-success').addClass('progress-bar-info');
+                        break;
+                }
+                //$submit_button.prop("disabled", false);
             }
         });
-
-
     });
-
-
 });
