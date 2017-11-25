@@ -20,7 +20,7 @@ from time import sleep
 @custom_permission_required('uploader.uploader_access', messages.WARNING, strings.NO_UPLOADER_ACCESS)
 def uploader(request):
     form = UploadForm(request.user)
-
+    print("Waiting 5 seconds!")
     sleep(5)
     resp = None
 
