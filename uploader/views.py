@@ -10,6 +10,7 @@ from .helpers import handle_uploaded_file
 from resurfedtools.helpers import generate_json_response
 from .forms import UploadForm
 from .tasks import upload_file
+from time import sleep
 
 
 # Create your views here.
