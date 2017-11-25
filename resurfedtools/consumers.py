@@ -7,7 +7,9 @@ from .helpers import generate_json_response
 
 @channel_session_user_from_http
 def ws_connect(message):
+    print("Client connecting")
     if not message.user.is_authenticated:
+        print("closing  connection")
         message.reply_channel.send({"close": True})
         return
 

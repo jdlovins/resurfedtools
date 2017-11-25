@@ -12,10 +12,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -24,10 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rx#@$%$!*%-nzsdbez3xie6(=w0s8ol^f2^0q^d=j0a4)t5!i-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", True)
+DEBUG = os.getenv("DEBUG", False)
 
 ALLOWED_HOSTS = ['127.0.0.1']
-
 
 # Application definition
 
@@ -54,8 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
-
 
 ROOT_URLCONF = 'resurfedtools.urls'
 
@@ -79,7 +76,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'resurfedtools.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -89,7 +85,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -109,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -123,20 +117,18 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = 'static/'
-
+STATIC_URL = '/staticfiles/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 LOGIN_URL = '/'
 
 AUTH_USER_MODEL = 'home.User'
 
 UPLOAD_PATH = os.getenv("UPLOAD_PATH", "/tmp")
-
 
 # bootstrap settings
 BOOTSTRAP3 = {
@@ -188,7 +180,7 @@ BOOTSTRAP3 = {
     'success_css_class': 'has-success',
 
     # Renderers (only set these if you have studied the source and understand the inner workings)
-    'formset_renderers':{
+    'formset_renderers': {
         'default': 'bootstrap3.renderers.FormsetRenderer',
     },
     'form_renderers': {
@@ -202,13 +194,13 @@ BOOTSTRAP3 = {
 
 # Channels settings
 CHANNEL_LAYERS = {
-   "default": {
-       "BACKEND": "asgi_redis.RedisChannelLayer",  # use redis backend
-       "CONFIG": {
-           "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],  # set redis address
-       },
-       "ROUTING": "resurfedtools.routing.channel_routing",  # load routing from our routing.py file
-   },
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",  # use redis backend
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],  # set redis address
+        },
+        "ROUTING": "resurfedtools.routing.channel_routing",  # load routing from our routing.py file
+    },
 }
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # our redis address
