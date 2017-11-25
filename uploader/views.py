@@ -21,6 +21,7 @@ from time import sleep
 def uploader(request):
     form = UploadForm(request.user)
 
+    sleep(5)
     resp = None
 
     if request.method == 'POST':
