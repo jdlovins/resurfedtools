@@ -38,7 +38,7 @@ $(window).bind("load", function () {
     };
 
     var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-    var ws_path = ws_scheme + '://' + window.location.hostname + ":8001/socket";
+    var ws_path = ws_scheme + '://' + window.location.host + "/socket";
     var socket = new ReconnectingWebSocket(ws_path);
 
 
