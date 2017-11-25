@@ -28,7 +28,7 @@
                 <li class="dropdown">
                     {% if not user.is_authenticated %}
                         <a href="" class="dropdown-toggle" data-toggle="dropdown">Sign Up<span class="caret"></span></a>
-                        <ul class="dropdown-menu dropdown-lr animated flipInX" role="menu">
+                        <ul class="dropdown-menu dropdown-lr" role="menu">
                             <div class="col-lg-12">
                                 {% include 'account/signup.html' %}
                             </div>
@@ -38,7 +38,7 @@
                         <li class="dropdown">
                         <a href="" class="dropdown-toggle" data-toggle="dropdown">Log In <span
                                 class="caret"></span></a>
-                        <ul class="dropdown-menu dropdown-lr animated slideInRight" role="menu">
+                        <ul class="dropdown-menu dropdown-lr" role="menu">
                             <div class="col-lg-12">
                                {% include 'account/login.html' %}
                             </div>
