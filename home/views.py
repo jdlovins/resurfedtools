@@ -9,12 +9,15 @@ from .decorators import custom_login_required
 from .models import User
 # Create your views here.
 
+from time import sleep
 
 def index(request):
     if request.user.is_authenticated():
         pass
 
     next_url = request.GET.get('next')
+
+    sleep(5)
 
     signup_form = SignUpForm()
     login_form = LoginForm()
