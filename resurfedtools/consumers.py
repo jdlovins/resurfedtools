@@ -14,9 +14,7 @@ def ws_connect(message):
         return
 
     message.reply_channel.send({
-        "text": generate_json_response(ActionType.REPLY_CHANNEL, {
-            'reply_channel': message.reply_channel.name
-        })
+        "text": generate_json_response(ActionType.REPLY_CHANNEL, message.reply_channel.name)
     })
 
 

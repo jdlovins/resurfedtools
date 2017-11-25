@@ -286,11 +286,11 @@ $(window).bind("load", function () {
 
         switch(packet.action) {
             case actions.reply_channel:
-                reply_channel = packet.data.reply_channel;
+                reply_channel = packet.data;
                 break;
 
             case actions.progress_update:
-                var percent = packet.data.progress;
+                var percent = packet.data;
                 $progress.css('width', percent + '%').attr('aria-valuenow', percent).text(percent + "%");
                 console.log(percent);
                 if (percent === 100)
@@ -298,7 +298,7 @@ $(window).bind("load", function () {
                 break;
 
             case actions.message:
-                log_message(packet.data.message);
+                log_message(packet.data);
                 break;
         }
     };

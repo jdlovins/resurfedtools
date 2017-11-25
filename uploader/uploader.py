@@ -2,16 +2,28 @@ import abc
 import ftplib
 
 import ftputil
+from .choices import ConnectionType
 
 
 class Uploader(metaclass=abc.ABCMeta):
+    @staticmethod
+    def factory(info):
+        if info.connection == ConnectionType.FTP:
+            return FTPUploader(info)
+        if info.connection == ConnectionType.SFTP:
+            return SFTPUploader(info)
+        if info.connection == ConnectionType.FTPS:
+            return FTPSUploader(info)
 
-    user_name = None
-    password = None
-    host = None
-    port = -1
+    def __init__(self, info):
+        self.username = info.username
+        self.password = info.password
+        self.host = info.host
+        self.port = info.port
 
-    def factory(type):
+
+    @abc.abstractmethod
+    def connect(self):
         pass
 
     @abc.abstractmethod
@@ -23,11 +35,11 @@ class Uploader(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def delete(self):
+    def delete(self, file):
         pass
 
     @abc.abstractmethod
-    def cd(self):
+    def cd(self, directory):
         pass
 
     @abc.abstractmethod
@@ -35,39 +47,61 @@ class Uploader(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def exists(self):
+    def exists(self, file):
         pass
-
 
 
 class FTPUploader(Uploader):
+    def __init__(self, info):
+        super().__init__(info)
+        self.client = None
 
-    def __init__(self):
+    def connect(self):
+        self.client = ftputil.FTPHost(self.host, self.username, self.password, self.port,
+                                      session_factory=FTPPortSession)
+
+    def upload(self):
         pass
 
-
-
-
-class SFTPUploader(Uploader):
-    def test(self):
+    def download(self):
         pass
+
+    def delete(self, file):
+        self.client.remove(file)
+
+    def cd(self, directory):
+        self.client.chdir(directory)
+
+    def pwd(self):
+        return self.client.pwd()
+
+    def exists(self, file):
+        return self.client.exists(file)
 
 
 class FTPSUploader(FTPUploader):
+    def __init__(self, info):
+        super().__init__(info)
 
-    def __init__(self):
-        super().__init__()
-        print("Before" + self.val)
+    def connect(self):
+        self.client = ftputil.FTPHost(self.host, self.username, self.password, self.port,
+                                      session_factory=FTPTLSPortSession)
 
-    def test(self):
-        print("Test from FTPS")
-        pass
+class SFTPUploader(Uploader):
+
+    def __init__(self, info):
+        super().__init__(info)
 
 
-class FtpPortSession(ftplib.FTP_TLS):
-
+class FTPPortSession(ftplib.FTP):
     def __init__(self, host, userid, password, port):
-        """Act like ftplib.FTP's constructor but connect to another port."""
+        ftplib.FTP.__init__(self)
+        self.connect(host, port)
+        self.login(userid, password)
+
+
+class FTPTLSPortSession(ftplib.FTP_TLS):
+    def __init__(self, host, userid, password, port):
         ftplib.FTP_TLS.__init__(self)
         self.connect(host, port)
         self.login(userid, password)

@@ -10,7 +10,7 @@ def generate_json_response(action, data):
     })
 
 
-def send_channel_message(reply_channel, data):
+def send_channel_message(reply_channel, data=""):
     Channel(reply_channel).send({
         "text": data
     })

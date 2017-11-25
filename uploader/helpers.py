@@ -23,6 +23,4 @@ def compress(reply_channel, file_path):
             compressed_file.write(data)
             percent_complete = round((uncompressed_file.tell() / total_size) * 100)
 
-            send_channel_message(reply_channel, generate_json_response(ActionType.PROGRESS_UPDATE, {
-                "progress": percent_complete
-            }))
+            send_channel_message(reply_channel, generate_json_response(ActionType.PROGRESS_UPDATE, percent_complete))

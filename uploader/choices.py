@@ -5,7 +5,7 @@ from django.conf import settings
 from djchoices import DjangoChoices, ChoiceItem
 
 
-class UploadType(DjangoChoices):
+class ConnectionType(DjangoChoices):
     FTP = ChoiceItem()
     FTPS = ChoiceItem()
     SFTP = ChoiceItem()
@@ -53,6 +53,7 @@ def get_live_maps():
                     maps.append((count,m))
                     count += 1
         except HTTPError as e:
+            print('failed to get:' + url)
             pass
 
     print("We are collecting maps")

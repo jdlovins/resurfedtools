@@ -17,8 +17,6 @@ def index(request):
 
     next_url = request.GET.get('next')
 
-    sleep(5)
-
     signup_form = SignUpForm()
     login_form = LoginForm()
     return render(request, 'index.html', {'signup_form': signup_form, 'login_form': login_form, 'next': next_url})
